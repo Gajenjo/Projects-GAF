@@ -5,7 +5,7 @@ from pygame import mixer
 
 import src.constants
 import src.board
-from src.shoot import shoot
+
 
 # Sound Effect from <a href="https://pixabay.com/sound-effects/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=music&amp;utm_content=39536">Pixabay</a>
 
@@ -117,12 +117,13 @@ while True:
                     cell_color = screen.get_at((board_x, board_y))
                     cell_color = cell_color[:-1]
                     print(cell_color)
-                    print(turn)
                     if cell_color == ship_color:
                         print("¡Le diste a un barco!")
-                        pygame.mixer.music.load(hit_sound)
-                        pygame.mixer.music.set_volume(0.1)
-                        pygame.mixer.music.play(loops=1)
+                        hit_s_sound = pygame.mixer.Sound(hit_sound).play().set_volume(0.1)
+                        # hit_s_sound.play(0)
+                        # pygame.mixer.music.load(hit_sound)
+                        # pygame.mixer.music.set_volume(0.1)
+                        # pygame.mixer.music.play(loops=1)
                         pygame.draw.rect(screen, hit_color, ((cell_x * cell_size)+5,(cell_y * cell_size)-5, cell_size, cell_size))
                         screen.blit(explosion,((cell_x * cell_size)+5,(cell_y * cell_size)-5, cell_size, cell_size))
                         pygame.display.update()
@@ -133,9 +134,11 @@ while True:
 
                     elif cell_color == bg_color:
                         print("No hay nada aquí, sigue buscando")
-                        pygame.mixer.music.load(miss_sound)
-                        pygame.mixer.music.set_volume(0.1)
-                        pygame.mixer.music.play(loops=1)
+                        miss_s_sound = pygame.mixer.Sound(miss_sound).play().set_volume(0.1)
+                        # miss_s_sound.play(0)
+                        # pygame.mixer.music.load(miss_sound)
+                        # pygame.mixer.music.set_volume(0.1)
+                        # pygame.mixer.music.play(loops=1)
                         pygame.draw.rect(screen, miss_color, ((cell_x * cell_size)+5,(cell_y * cell_size)-5, cell_size, cell_size))
                         pygame.display.update()
                         turn = "computer_turn"
@@ -144,25 +147,36 @@ while True:
             
             # Computer turn
             if turn == "computer_turn":
-                enemy_x = np.random.randint(board_pos[0],board_pos[0]+new_size)
-                enemy_y = np.random.randint(board_pos[1],board_pos[1]+new_size)
-                # enemy_x = np.random.randint(board_enemy_array_true.shape[0],board_enemy_array_true.shape[1])
-                # enemy_y = np.random.randint(board_enemy_array_true.shape[0],board_enemy_array_true.shape[1])
-                # enemy_x= enemy_x*board_pos[0]
-                # enemy_y= enemy_y*board_pos[1]
-                if (enemy_x,enemy_y) == ship_color:
-                    pygame.mixer.music.load(hit_sound)
-                    pygame.mixer.music.set_volume(0.1)
-                    pygame.mixer.music.play(loops=1)
+                # enemy_x = np.random.randint(board_pos[0],board_pos[0]+new_size)
+                # enemy_y = np.random.randint(board_pos[1],board_pos[1]+new_size)
+                enemy_x = np.random.randint(0,board_enemy_array_true.shape[1])
+                enemy_y = np.random.randint(0,board_enemy_array_true.shape[1])
+                enemy_x= int((enemy_x*cell_size)+board_pos[0])
+                enemy_y= int((enemy_y*cell_size)+board_pos[1])
+                print(enemy_x,enemy_y)
+                # pc_cell_x = enemy_x//cell_size
+                # pc_cell_y = enemy_y//cell_size
+                pc_cell_color = screen.get_at((enemy_x+1, enemy_y+1))                
+                pc_cell_color = pc_cell_color[:-1]
+                print(pc_cell_color)
+                if pc_cell_color == ship_color:
+                    time.sleep(1)
+                    hit_s_sound = pygame.mixer.Sound(hit_sound).play().set_volume(0.1)
+                    # pygame.mixer.music.load(hit_sound)
+                    # pygame.mixer.music.set_volume(0.1)
+                    # pygame.mixer.music.play(loops=1)
                     pygame.draw.rect(screen, hit_color, ((enemy_x),(enemy_y), cell_size, cell_size))
                     screen.blit(explosion,((enemy_x),(enemy_y), cell_size, cell_size))
+                    pygame.display.update()                    
+                elif pc_cell_color == bg_color:
+                    time.sleep(1)
+                    miss_s_sound = pygame.mixer.Sound(miss_sound).play().set_volume(0.1)
+                    # pygame.mixer.music.load(miss_sound)
+                    # pygame.mixer.music.set_volume(0.1)
+                    # pygame.mixer.music.play(loops=1)
+                    pygame.draw.rect(screen, miss_color, ((enemy_x),(enemy_y), cell_size, cell_size))
                     pygame.display.update()
-                    print(turn + "a")
-                    # break
-                else:
-                    pygame.draw.rect(screen, hit_color, ((enemy_x),(enemy_y), cell_size, cell_size))
-                    pygame.display.update()
-                    print(turn + "b")
+                    # print(turn + "b")
                     turn = "player_turn"
                     
                     
